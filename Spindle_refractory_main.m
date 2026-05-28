@@ -45,7 +45,7 @@ alphaAHP=48;
 bataAHP=0.09;
 
 
-%% ÔëÉù
+%% 
 %phi_T_sd=10e-3;
 % phi_T_sd=10e-3;
 % 
@@ -58,7 +58,7 @@ bataAHP=0.09;
 
 noise3 =zeros(1,vec_len);%
 
-%% ³õÊ¼»¯
+%% 
 Vp = zeros(1,vec_len);
 Vi = zeros(1,vec_len);
 Vt = zeros(1,vec_len);
@@ -189,7 +189,7 @@ subplot(3,1,1)
 plot(time_array/1000,Vt)
 %plot(time_array(500000:end)/1000,Vt(500000:end))
 ylim([-90 -30])
-xlim([10 50])%Ô­´úÂëÊı¾İ[5 30][10 55]
+xlim([10 50])%åŸä»£ç æ•°æ®[5 30][10 55]
 %%xlabel(['g_L_K=' num2str(g_L_K)])
 xlabel('Time(s)')
 ylabel('Vt(mV)')
@@ -199,7 +199,7 @@ plot(time_array/1000,Vr)
 %%plot(time_array(500000:end)/1000,Vr(500000:end))
 ylim([-90 -30])
 %%ylim([-100 0])
-xlim([10 50])%Ô­´úÂëÊı¾İ[5 30]
+xlim([10 50])%åŸä»£ç æ•°æ®[5 30]
 %%figure
 %%plot(time_array,noise1)
 xlabel('Time(s)')
@@ -209,7 +209,7 @@ subplot(3,1,3)
 plot(time_array/1000,R_AHP)
 %plot(time_array/1000,g)
 %ylim([-100 0])
-xlim([10 50])%Ô­´úÂëÊı¾İ[5 30]
+xlim([10 50])%åŸä»£ç æ•°æ®[5 30]
 %figure
 %plot(time_array,noise1)
 xlabel('Time(s)')
@@ -221,7 +221,7 @@ peakInterval = diff(locs)/10000;
 fd=1./peakInterval;%
 x=1:length(fd);%
 
-% %% detect spindle number£¬ output is spindle_number.
+% %% detect spindle numberï¼Œ output is spindle_number.
 V1=Vt(15000:500000-1);%%615000-1   500000-1
 V=downsample(V1(1:end),100);
 
