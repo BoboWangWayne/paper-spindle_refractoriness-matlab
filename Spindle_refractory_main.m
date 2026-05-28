@@ -1,12 +1,11 @@
  clear all; clc
 
-T = 60*1000 ;%原时间长度T = 30*1000，50*1000
+T = 60*1000 ;%
 dt = 1e-1;
 time_array = 0:dt:T;
 vec_len = length(time_array);
 
-%%修改HA电导级Ih电导的文件%%增加不应期循环
-%% 参数
+%%
 Cm=1;
 taot=20;taor=20; %ms
 Qt_max=400e-3;Qr_max=400e-3;
@@ -25,39 +24,39 @@ Ca0=2.4e-4;
 k2=4e-4;k3=1e-1;k4=1e-3;
 np=4;ginc=2;
 
-%关键参数
+%
 k1=2.5e7;
-E_h=-40;%原始-40，-60时出现高频振荡
+E_h=-40;
 C=(pi./sqrt(3));
 
 g_L_K=0.019;
 %g_h=0.062;
-HA_max=0.03;%30μM=0.03mM,组胺浓度越大，纺锤波越多，根据生理实验，取值范围为0.0001~0.03，这个范围内对IAHP有影响
-max_ha=10;%原始4.5  10
+HA_max=0.03;
+max_ha=10;%
 min_ha=2.1;
-EC_50=0.2;%%初始为2μM=0.002mM(参考论文)0.01,0.02,0.03,取值范围为0.001~0.1，0.12-0.26为类纺锤波，0.27之后为高频振荡（KTC=0.06）;
-b=1.6;%%1.8
-sigma_h=3;%初始为3
-g_h1=0.061;%离子通道电导
-K_TC_h=0;%%连接强度0~0.17  0.18以后为静息态，此时EC50=0.02，0
+EC_50=0.02;
+b=1.6;
+sigma_h=3;
+g_h1=0.061;
+K_TC_h=0.04;
 %g_AHP=6;
 
-alphaAHP=48;%AHP缓慢变量的参数
+alphaAHP=48;
 bataAHP=0.09;
 
-%%一般取值EC50=0.002,KTC=0.06
+
 %% 噪声
 %phi_T_sd=10e-3;
-% phi_T_sd=10e-3;%增加噪音，选这个
+% phi_T_sd=10e-3;
 % 
 % noise3 = normrnd(0,phi_T_sd,size(time_array)); 
 
-%noise3 = gammae^2*sqrt(phi_T_sd*dt)*randn(1,vec_len);%增加噪音，选这个
+%noise3 = gammae^2*sqrt(phi_T_sd*dt)*randn(1,vec_len);
 
 %alpha=1.2;beta=0.6;D1=0.05;gamma1=D1^(1/alpha);delta=0;D2=0.005;gamma2=D2^(1/alpha);
 %noise3 = levy(alpha,beta,gamma2,delta,vec_len);
 
-noise3 =zeros(1,vec_len);%这个与noise3=normrnd(0,phi_T_sd,size(time_array))2选1
+noise3 =zeros(1,vec_len);%
 
 %% 初始化
 Vp = zeros(1,vec_len);
@@ -90,10 +89,10 @@ m_h1 = zeros(1,vec_len);
 m_h2 = zeros(1,vec_len);
 concentration_Ca = zeros(1,vec_len);
 concentration_Na = zeros(1,vec_len);
-R_AHP=zeros(1,vec_len);%新增I_ahp输出
-HA=zeros(1,vec_len);%新增HA浓度输出
-R_h=zeros(1,vec_len);%新增I_h输出
-s_AHP=zeros(1,vec_len);%新增IAHP的激活门控输出
+R_AHP=zeros(1,vec_len);
+HA=zeros(1,vec_len);
+R_h=zeros(1,vec_len);
+s_AHP=zeros(1,vec_len);
 I=zeros(1,vec_len);
 g=zeros(1,vec_len);
 
@@ -145,8 +144,8 @@ for t = 2:vec_len
     %I_h=g_h*(m_h1(t-1)+ginc*m_h2(t-1))*(Vt(t-1)-E_h);
     concentration_Ca(t)=concentration_Ca(t-1)+dt*(alphaCa*I_T_t-(concentration_Ca(t-1)-Ca0)./tao_Ca);
    
-    %新增组胺浓度及电导计算
-    HA=HA_max/(1+exp(-(Vt(t-1)+80)/sigma_h));%电势由-60改为-80
+    %gAHP
+    HA=HA_max/(1+exp(-(Vt(t-1)+80)/sigma_h));
     g_AHP=((max_ha-min_ha)/(1+(HA/EC_50))^b)+min_ha;
     g_h=g_h1+K_TC_h*HA;
     g(t)=g_h;
@@ -162,8 +161,8 @@ for t = 2:vec_len
     %Vr(t)=Vr(t-1)+dt*((-J_L_r-JAMPA_Ser-JGABA_Srr-Cm*taor*(I_LK_r+I_T_r))./taor);
     Vt(t)=Vt(t-1)+dt*((-J_L_t-JAMPA_Set-JGABA_Srt-Cm*taot*(I_LK_t+I_T_t+I_h))./taot);
     Vr(t)=Vr(t-1)+dt*((-J_L_r-JAMPA_Ser-JGABA_Srr-Cm*taor*(I_LK_r+I_T_r+I_AHP))./taor);
-    R_AHP(t)=I_AHP;%新增I_ahp输出
-      R_h(t)=I_h;%新增I_h输出
+    R_AHP(t)=I_AHP;
+      R_h(t)=I_h;
 
 
     Set(t) = Set(t-1) + Setdot(t-1)*dt;
@@ -184,13 +183,44 @@ for t = 2:vec_len
     m_h2(t)=m_h2(t-1)+dt*(k3*Ph*m_h1(t-1)-k4*m_h2(t-1));
   
 end
+% =========Figure =========
+figure
+subplot(3,1,1)
+plot(time_array/1000,Vt)
+%plot(time_array(500000:end)/1000,Vt(500000:end))
+ylim([-90 -30])
+xlim([10 50])%原代码数据[5 30][10 55]
+%%xlabel(['g_L_K=' num2str(g_L_K)])
+xlabel('Time(s)')
+ylabel('Vt(mV)')
 
-% %
-[pks, locs] = findpeaks(Vt(150000:end));%第15s后开始计算
+subplot(3,1,2)
+plot(time_array/1000,Vr)
+%%plot(time_array(500000:end)/1000,Vr(500000:end))
+ylim([-90 -30])
+%%ylim([-100 0])
+xlim([10 50])%原代码数据[5 30]
+%%figure
+%%plot(time_array,noise1)
+xlabel('Time(s)')
+ylabel('Vr(mV)')
+
+subplot(3,1,3)
+plot(time_array/1000,R_AHP)
+%plot(time_array/1000,g)
+%ylim([-100 0])
+xlim([10 50])%原代码数据[5 30]
+%figure
+%plot(time_array,noise1)
+xlabel('Time(s)')
+ylabel('R_AHP')
+%
+
+[pks, locs] = findpeaks(Vt(15000:end));%
 peakInterval = diff(locs)/10000;
-fd=1./peakInterval;%纵坐标
-x=1:length(fd);%横坐标
-·
+fd=1./peakInterval;%
+x=1:length(fd);%
+
 % %% detect spindle number， output is spindle_number.
 V1=Vt(15000:500000-1);%%615000-1   500000-1
 V=downsample(V1(1:end),100);
